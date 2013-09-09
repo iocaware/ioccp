@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  urgent: false
+  acknowleged: false
+  user_acknowledged: 1
+  reason: MyString
+  actionplan: MyText
+
+two:
+  urgent: false
+  acknowleged: false
+  user_acknowledged: 1
+  reason: MyString
+  actionplan: MyText

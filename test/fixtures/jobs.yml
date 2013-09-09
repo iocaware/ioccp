@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  name: MyString
+  start_on: 2013-09-08 21:02:22
+  end_on: 2013-09-08 21:02:22
+  target: MyString
+  ioc: MyString
+  repeat: MyString
+
+two:
+  name: MyString
+  start_on: 2013-09-08 21:02:22
+  end_on: 2013-09-08 21:02:22
+  target: MyString
+  ioc: MyString
+  repeat: MyString
