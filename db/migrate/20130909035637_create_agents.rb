@@ -17,7 +17,7 @@ class CreateAgents < ActiveRecord::Migration
       t.integer :job_id
     end
 
-    add_index(:agents_users, [:agent_id, :job_id])
+    add_index(:agents_jobs, [:agent_id, :job_id])
 
   end
 end

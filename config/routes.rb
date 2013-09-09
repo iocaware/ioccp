@@ -5,7 +5,11 @@ Ioccp::Application.routes.draw do
 
   resources :users
   resources :sessions
-
+ 
+  post '/agent/configure', to: 'agent#configure'
+  get '/agent/settings', to: 'agent#settings'
+  post '/agent/save', to: 'agent#save'
+  
   root to: 'main#index'
 
 end
