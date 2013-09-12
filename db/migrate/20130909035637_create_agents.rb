@@ -8,6 +8,7 @@ class CreateAgents < ActiveRecord::Migration
       t.string :target
       t.string :os
       t.string :osv
+      t.string :hmac
       t.timestamp :lastcheck
       t.timestamps
     end
