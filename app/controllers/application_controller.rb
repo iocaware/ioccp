@@ -41,4 +41,8 @@ private
 	def authorize
 		redirect_to login_url, alert: "Not authorized" if current_user.nil?
 	end
+
+	def get_aid
+		params[:agent_id]
+	end
 end

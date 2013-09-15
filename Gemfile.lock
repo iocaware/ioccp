@@ -69,6 +69,7 @@ GEM
       activesupport (= 3.2.13)
       bundler (~> 1.0)
       railties (= 3.2.13)
+    rails-boilerplate (0.1.9)
     railties (3.2.13)
       actionpack (= 3.2.13)
       activesupport (= 3.2.13)
@@ -110,6 +111,7 @@ DEPENDENCIES
   coffee-rails (~> 3.2.1)
   jquery-rails
   rails (= 3.2.13)
+  rails-boilerplate
   sass-rails (~> 3.2.3)
   signed_json
   sqlite3

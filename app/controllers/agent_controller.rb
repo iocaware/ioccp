@@ -1,7 +1,7 @@
 require 'securerandom'
 
 class AgentController < ApplicationController
-	before_filter :authorize, :except => [:configure, :register, :get_public_key]
+	before_filter :authorize, :except => [:configure, :register, :get_public_key, :check]
 	skip_before_filter :verify_authenticity_token, :except => [:settings, :save]
 
 	def settings
@@ -13,10 +13,51 @@ class AgentController < ApplicationController
 
 	## API CALLS
 	def agentnumbers
+		output = Hash.new
+		output['total'] = Agent.count
+		output['connected'] = Agent.connected
+		output['connected_1'] = Agent.connected_1day_ago
+		output['connected_7'] = Agent.connected_7days_ago
+		output['connected_30'] = Agent.connected_30days_ago
+		output['connected_over_30'] = Agent.connected_over30
+		output['never'] = Agent.connected_never
+		render json: output
+	end
+
+	def osnumbers
+		output = Array.new
+		data = Agent.by_os
+		data.each{|k,v| 
+			tmp = Hash.new
+			tmp['label'] = k
+			tmp['data'] = v
+			output << tmp
+		}
+		render json: output
+	end
+
+	def check
+		agent = get_aid
+		output = Hash.new
+		a = Agent.find(:all, :conditions => {aid: agent}).first
+		a.lastcheck = Time.now
+		a.save!
+		output['jobs'] = Array.new
+		a.jobs.each {|j|
+			tmpHash = Hash.new
+			tmpHash['jid'] = j.jid
+			tmpHash['iocs'] = Array.new
+			j = Job.find(j.id)
+			j.iocs.each {|job| 
+				tmpHash['iocs'] << job.iid
+			}
+			output['jobs'] << tmpHash
+		}
+		render json: sign_json(get_aid, output)
 	end
 
 	def get_public_key
-		agent = params[:agent_id]
+		agent = get_aid
 		existing = Agent.exists?(aid: agent)
 		if existing
 			a = Agent.find(:all, :conditions => {aid: agent}).first
@@ -34,7 +75,9 @@ class AgentController < ApplicationController
 	def configure
 		settings = AgentSetting.find(:all)
 		output = Hash.new
-		output['success'] = true
+		settings.each{|s|
+			output[s.name] = s.value
+		}
 		render json: output
 	end
 
@@ -42,6 +85,15 @@ class AgentController < ApplicationController
 		data = verify_hmac(get_aid, params['_json'])
 		output = Hash.new
 		output['success'] = false
+		if data['os'].include?('Windows')
+			target = 'Windows'
+		elsif data['os'].include?('Mac')
+			target = 'Mac'
+		elsif data['os'].include?('Linux')
+			target = 'Linux'
+		else
+			target = 'Other'
+		end
 		unless data.nil?
 			begin
 				# FIXME: check if dirty
@@ -51,7 +103,7 @@ class AgentController < ApplicationController
 				a.ip = data['ip']
 				a.mac = data['mac']
 				a.hostname = data['hostname']
-				a.target = ''
+				a.target = target
 				a.os = data['os']
 				a.osv = data['osv']
 				a.save!
@@ -61,12 +113,7 @@ class AgentController < ApplicationController
 				$utils.error(e.inspect + " " + caller.join("\r\n"))
 			end
 		end
-		output = sign_json(get_aid, output)
-		render json: output
+		render json: sign_json(get_aid, output)
 	end
-private
-
-	def get_aid
-		params[:agent_id]
-	end
+	
 end

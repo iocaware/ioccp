@@ -1,18 +1,17 @@
-<div  class="span-4"></div>
-<div class="span-16">
-<h1>Log In</h1>
-
-<%= form_tag sessions_path do %>
-  <div class="field">
-    <%= label_tag :username %><br />
-    <%= text_field_tag :username, params[:username] %>
-  </div>
-  <div class="field">
-    <%= label_tag :password %><br />
-    <%= password_field_tag :password %>
-  </div>
-  <div class="actions"><%= submit_tag "Log In" %></div>
+<div class="container">
+<%= form_tag sessions_path, class: 'form-signin' do %>
+<% if flash[:notice] %>
+    <div class="notice"><%= flash[:notice] %></div>
 <% end %>
-</div>
-<div class="span-4 last">
+<% if flash[:alert] %>
+    <div class="alert"><%= flash[:alert] %></div>
+<% end %>
+  <h2 class="form-signin-heading">Please sign in</h2>
+  <%= text_field_tag :username, params[:username], :placeholder => 'Enter username', :class => "input-block-level" %>
+  <%= password_field_tag :password, nil, :placeholder => 'Enter password', :class => "input-block-level"  %>
+  <label class="checkbox">
+   <input type="checkbox" value="remember-me"> Remember me
+  </label>
+  <%= submit_tag "Log In",  :class => "btn btn-large btn-primary" %>
+<% end %>
 </div>

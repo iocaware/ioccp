@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130909041942) do
+ActiveRecord::Schema.define(:version => 20130915205832) do
 
   create_table "agent_settings", :force => true do |t|
     t.string   "name"
@@ -32,11 +32,13 @@ ActiveRecord::Schema.define(:version => 20130909041942) do
     t.datetime "lastcheck"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.string   "agent_id"
   end
 
   create_table "agents_jobs", :force => true do |t|
     t.integer "agent_id"
     t.integer "job_id"
+    t.integer "status"
   end
 
   add_index "agents_jobs", ["agent_id", "job_id"], :name => "index_agents_jobs_on_agent_id_and_job_id"
@@ -67,16 +69,51 @@ ActiveRecord::Schema.define(:version => 20130909041942) do
 
   add_index "comments", ["user_id"], :name => "index_comments_on_user_id"
 
+  create_table "iocs", :force => true do |t|
+    t.string   "iid"
+    t.string   "name"
+    t.string   "description"
+    t.string   "author"
+    t.string   "content"
+    t.string   "path"
+    t.string   "publicpath"
+    t.string   "source"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  create_table "iocs_jobs", :force => true do |t|
+    t.integer "ioc_id"
+    t.integer "job_id"
+  end
+
+  add_index "iocs_jobs", ["job_id", "ioc_id"], :name => "index_iocs_jobs_on_job_id_and_ioc_id"
+
+  create_table "job_statuses", :force => true do |t|
+    t.string   "job_id"
+    t.string   "agent_id"
+    t.integer  "status"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "jobs", :force => true do |t|
     t.string   "name"
     t.datetime "start_on"
     t.datetime "end_on"
     t.string   "target"
-    t.string   "ioc"
     t.string   "repeat"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.string   "jid"
   end
+
+  create_table "jobs_iocs", :force => true do |t|
+    t.integer "job_id"
+    t.integer "ioc_id"
+  end
+
+  add_index "jobs_iocs", ["job_id", "ioc_id"], :name => "index_jobs_iocs_on_job_id_and_ioc_id"
 
   create_table "results", :force => true do |t|
     t.boolean  "pass"
