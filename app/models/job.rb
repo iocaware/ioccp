@@ -3,9 +3,15 @@ class Job < ActiveRecord::Base
 	has_and_belongs_to_many :iocs
 	has_many :results
 	has_many :alerts
+	has_many :job_statuses
 	has_many :comments, :as => :commentable
+
  	attr_accessible :end_on, :ioc, :name, :repeat, :start_on, :target
 
+ 	def self.total
+ 		self.find(:all).count
+ 	end
+ 	
  	def self.running
  		self.find(:all, :conditions => ['jobs.start_on < ? and jobs.end_on > ? ',Time.now, Time.now])
  	end

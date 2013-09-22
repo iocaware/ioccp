@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  agent_id: 1
+  indicator: MyString
+  result: false
+
+two:
+  agent_id: 1
+  indicator: MyString
+  result: false

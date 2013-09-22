@@ -1,6 +1,7 @@
 class Agent < ActiveRecord::Base
 	has_and_belongs_to_many :jobs
 	has_many :alerts
+  has_many :job_statuses
 	has_many :comments, :as => :commentable
   	attr_accessible :aid, :hostname, :ip, :lastcheck, :mac, :os, :osv, :target
 
@@ -8,8 +9,29 @@ class Agent < ActiveRecord::Base
       self.find(:all).count
     end
     
+    def connected?
+      check =  AgentSetting.find(:all, :conditions => {name: 'check_time'}).first.value.to_i.minutes.ago+1
+      if lastcheck > check
+        return true
+      else
+        return false
+      end
+    end
+
+    def self.get_connected
+      self.find(:all, :conditions => ['agents.lastcheck > ?', AgentSetting.find(:all, :conditions => {name: 'check_time'}).first.value.to_i.minutes.ago+3])
+    end
+
+    def self.get_disconnected
+      self.find(:all, :conditions => ['agents.lastcheck < ?', AgentSetting.find(:all, :conditions => {name: 'check_time'}).first.value.to_i.minutes.ago+3])
+    end
+
+    def self.get_never
+      self.find(:all, :conditions => ['agents.lastcheck = ?', nil])
+    end
+    
   	def self.connected
-  		self.find(:all, :conditions => ['agents.lastcheck > ?', AgentSetting.find(:all, :conditions => {name: 'check_time'}).first.value.to_i.minutes.ago]).count
+  		self.find(:all, :conditions => ['agents.lastcheck > ?', AgentSetting.find(:all, :conditions => {name: 'check_time'}).first.value.to_i.minutes.ago+3]).count
   	end
 
   	def self.connected_1day_ago

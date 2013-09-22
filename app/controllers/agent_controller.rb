@@ -11,6 +11,28 @@ class AgentController < ApplicationController
 	def save
 	end
 
+	def list
+		type = params['type'].downcase
+		if type.include?("disconnect") 
+			type = "disconnected"
+		end
+		if !['connected', 'disconnected', 'never', 'all'].include?(type)
+			render :text => "Cool story bro"
+		else
+			case type
+			when "all"
+				@agents = Agent.all
+			when "connected"
+				@agents = Agent.get_connected
+			when "disconnected" 
+				@agents = Agent.get_disconnected
+			when "never"
+				@agents = Agent.get_never
+			end
+		end
+	end
+
+
 	## API CALLS
 	def agentnumbers
 		output = Hash.new
@@ -41,17 +63,21 @@ class AgentController < ApplicationController
 		output = Hash.new
 		a = Agent.find(:all, :conditions => {aid: agent}).first
 		a.lastcheck = Time.now
+		puts a.job_statuses.inspect
 		a.save!
 		output['jobs'] = Array.new
 		a.jobs.each {|j|
-			tmpHash = Hash.new
-			tmpHash['jid'] = j.jid
-			tmpHash['iocs'] = Array.new
-			j = Job.find(j.id)
-			j.iocs.each {|job| 
-				tmpHash['iocs'] << job.iid
-			}
-			output['jobs'] << tmpHash
+			js = JobStatus.find(:all, :conditions => ['job_statuses.job_id = ? and job_statuses.agent_id = ?', j.id, Agent.find(:all, :conditions => {aid: agent}).first.id]).first
+			if js.nil? or js.status == 0
+				tmpHash = Hash.new
+				tmpHash['jid'] = j.jid
+				tmpHash['iocs'] = Array.new
+				j = Job.find(j.id)
+				j.iocs.each {|job| 
+					tmpHash['iocs'] << job.iid
+				}
+				output['jobs'] << tmpHash
+			end
 		}
 		render json: sign_json(get_aid, output)
 	end

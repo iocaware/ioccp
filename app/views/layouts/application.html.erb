@@ -24,9 +24,42 @@
   <%= javascript_include_tag 'application' %>
 </head>
 <body>
-
+<div class="container-fluid">
+  <div class="row-fluid">
+    <div class="span12">
+      <ul class="nav nav-pills">
+        <li>
+          <a href="/">Home</a>
+        </li>
+        <li>
+          <a href="/job/list">Jobs</a>
+        </li>
+        <li>
+          <a href="/agent/list/all">Agents</a>
+        </li>
+        <li class="dropdown pull-right">
+        <a href="#" data-toggle="dropdown" class="dropdown-toggle"><% current_user.inspect %><strong class="caret"></strong></a>
+        <ul class="dropdown-menu">
+            <li>
+              <a href="/logout">Logout</a>
+            </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>
+<% if flash[:alert] %>
+    <div class="row-fluid">
+        <div class="span12" id="alerts alert-block alert-error">
+            <div class="alert">
+                <button type="button" class="close" data-dismiss="alert">x</button>
+                <h4><%= flash[:alert] %></h4>
+            </div>
+        </div>
+    </div>
+    <% end %>
   <%= yield %>
-
+</div>
   
 </body>
 </html>

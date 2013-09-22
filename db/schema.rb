@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130915205832) do
+ActiveRecord::Schema.define(:version => 20130922001147) do
 
   create_table "agent_settings", :force => true do |t|
     t.string   "name"
@@ -52,6 +52,8 @@ ActiveRecord::Schema.define(:version => 20130915205832) do
     t.integer  "results_id"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
+    t.integer  "agent_id"
+    t.integer  "job_id"
   end
 
   add_index "alerts", ["acknowleged"], :name => "index_alerts_on_acknowleged"
@@ -68,6 +70,9 @@ ActiveRecord::Schema.define(:version => 20130915205832) do
   end
 
   add_index "comments", ["user_id"], :name => "index_comments_on_user_id"
+
+# Could not dump table "indicator_results" because of following StandardError
+#   Unknown type 'results_id' for column 'integer'
 
   create_table "iocs", :force => true do |t|
     t.string   "iid"
@@ -115,16 +120,8 @@ ActiveRecord::Schema.define(:version => 20130915205832) do
 
   add_index "jobs_iocs", ["job_id", "ioc_id"], :name => "index_jobs_iocs_on_job_id_and_ioc_id"
 
-  create_table "results", :force => true do |t|
-    t.boolean  "pass"
-    t.integer  "agent_id"
-    t.integer  "job_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
-
-  add_index "results", ["agent_id"], :name => "index_results_on_agent_id"
-  add_index "results", ["job_id"], :name => "index_results_on_job_id"
+# Could not dump table "results" because of following StandardError
+#   Unknown type 'ioc' for column 'string'
 
   create_table "users", :force => true do |t|
     t.string   "first_name"

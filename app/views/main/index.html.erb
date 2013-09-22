@@ -1,14 +1,3 @@
-<div class="container-fluid">
-    <% if flash[:alert] %>
-    <div class="row-fluid">
-        <div class="span12" id="alerts alert-block alert-error">
-            <div class="alert">
-                <button type="button" class="close" data-dismiss="alert">x</button>
-                <h4><%= flash[:alert] %></h4>
-            </div>
-        </div>
-    </div>
-    <% end %>
     <div class="row-fluid">
         <div class="span4">
             <div class="box grad_colour_light_blue">
@@ -16,8 +5,8 @@
                 <div class="block box_content round_bottom std_padding">
                     <div id="quick_stats" style="height: 200px; padding: 10px">
                     <ul class="unstyled">
-                     <li><span class="stat"><a href="/agent/connected"><%= @agents_connected %></a>/<a href="/agent/disconnected"><%= @agents_total %></a> agents connected</span></li>
-                     <li><span class="stat"><a href="/job/running"><%= @jobs_count %></a> Running Jobs</a></span></li>
+                     <li><span class="stat"><a href="/agent/list/connected"><%= @agents_connected %></a>/<a href="/agent/list/all"><%= @agents_total %></a> Agents Connected</span></li>
+                     <li><span class="stat"><a href="/job/list"><%= @jobs_count %></a>/<a href="/job/list"><%= @jobs_total %></a> Jobs Running</span></li>
                      <li><span class="stat"><a href="/alerts/active"><%= @alert_count %></a> Active Alerts</a></span></li>
                     </ul>
                     </div>
@@ -115,12 +104,24 @@
                         <tbody>
                         <% @jobs.each do |i| %>
                         <tr class="<%= cycle("odd", "even") -%>">
-                         <td><%=i.name %></td>
+                         <td><a href="/job/details/<%=i.jid%>"><%=i.name %></a></td>
                          <td>
                              <div id="status-<%=i.jid%>"></div>
+                             <div class="progress progress-striped active" id="progress-<%=i.jid%>">
+                                <div class="bar" id="bar-<%=i.jid%>">
+                                </div>
+                             </div>
                              <script>
                              $.getJSON('/job/status/<%=i.jid%>', function(d) {
-                                $('#status-<%=i.jid%>').text(d.total_completed + "/" + d.total_agents + " (" + d.percentage + "% Complete " + d.total_in_process + " Running)");
+                                if (d.percentage < 30) {
+                                    color = "progress-danger";
+                                } else if (d.percentage < 70) {
+                                    color = "progress-warning";
+                                } else {
+                                    color = "progress-success";
+                                }
+                                $("#progress-<%=i.jid%>").addClass(color);
+                               $("#bar-<%=i.jid%>").css("width", d.percentage + "%");
                              })
                              </script>
 
@@ -191,9 +192,9 @@
             </div>
         </div>
     </div>
-</div>
 <%= javascript_include_tag  'jquery.flot.min' %>
 <%= javascript_include_tag  'jquery.flot.pie.min' %>
+<%= javascript_include_tag  'jquery.flot.stack.min' %>
 <%= javascript_include_tag  'jquery.dataTables' %>
 <%= javascript_include_tag  'jquery.multiselect.min' %>
 <script>
@@ -235,7 +236,7 @@
         if(!obj) {
             return;
         }
-        alert(obj.series.label);
+        window.location.href = '/agent/list/' + obj.series.label;
     });
  });
  $.getJSON('/agent/osnumbers', function(d) {
@@ -255,7 +256,7 @@
         if(!obj) {
             return;
         }
-        alert(obj.series.label);
+        //window.location.href = '/agent/list/' + obj.series.label;
     });
  });
 
