@@ -109,7 +109,7 @@ class JobController < ApplicationController
 		end
 		#i = Hash.from_xml(Base64.decode64(Ioc.find(:all, :conditions => {iid: ioc}).first.content))
 		results = data.deep_find('status')
-		alert = results.any? {|t| t == true }
+		alert = results.all? {|t| t == true }
 		puts alert
 		r = Result.new
 		r.agent_id = a
